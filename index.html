@@ -760,7 +760,7 @@ let cfg = {
 };
 try { const s = JSON.parse(localStorage.getItem('jfw_cfg')); if(s) cfg = Object.assign(cfg,s); } catch(e){}
 
-let products=[], orders=[], feedbacks=[], tempImgs=[];
+let products=[], orders=[], feedbacks=[];
 try { products  = JSON.parse(localStorage.getItem('jfw_products'))  || []; } catch(e){}
 try { orders    = JSON.parse(localStorage.getItem('jfw_orders'))    || []; } catch(e){}
 try { feedbacks = JSON.parse(localStorage.getItem('jfw_feedbacks')) || []; } catch(e){}
