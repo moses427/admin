@@ -753,28 +753,49 @@ lucide.createIcons();
 // ── Config (shared with main site via localStorage) ──
 let cfg = {
   sheet:'', wa:'919840980001', pass:'admin123',
-  offer:'3 Casual Shirts for ₹999', theme:'default', delivery:'Free delivery for orders above ₹999',
+  offer:'3 Casual Shirts for ₹999', theme:'default',
+  delivery:'Free delivery for orders above ₹999',
   zone1label:'T. Nagar / Nungambakkam', zone1charge:'0',
   zone2label:'Chennai City', zone2charge:'40',
   zone3label:'Outside Chennai', zone3charge:'80'
 };
-try { const s = JSON.parse(localStorage.getItem('jfw_cfg')); if(s) cfg = Object.assign(cfg,s); } catch(e){}
 
-let products=[], orders=[], feedbacks=[];
-try { products  = JSON.parse(localStorage.getItem('jfw_products'))  || []; } catch(e){}
-try { orders    = JSON.parse(localStorage.getItem('jfw_orders'))    || []; } catch(e){}
-try { feedbacks = JSON.parse(localStorage.getItem('jfw_feedbacks')) || []; } catch(e){}
+try {
+  const s = JSON.parse(localStorage.getItem('jfw_cfg'));
+  if(s) cfg = Object.assign(cfg,s);
+} catch(e){}
 
-if (!products.length) {
-  products = [
-    {id:1,name:'Casual Shirt (Offer)',price:333,mrp:499,desc:'High quality cotton shirt.',colors:['Blue','Black','White'],images:['https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400'],category:'shirt'},
-    {id:2,name:'Premium Jeans',price:899,mrp:1299,desc:'Stretchable denim. Slim fit.',colors:['Blue','Black'],images:['https://images.unsplash.com/photo-1542272604-787c3835535d?w=400'],category:'jeans'},
-    {id:3,name:'Kids T-Shirt',price:199,mrp:299,desc:'Soft cotton.',colors:['Red','Green','Yellow'],images:['https://images.unsplash.com/photo-1519278409-1f56ab241a42?w=400'],category:'kids'},
-    {id:4,name:'Lycra Track Pant',price:399,mrp:599,desc:'Comfortable lycra.',colors:['Black','Navy'],images:['https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400'],category:'track'},
-  ];
-  localStorage.setItem('jfw_products', JSON.stringify(products));
+
+// ── LOAD FROM SHEET ──
+async function loadFromSheet() {
+  console.log("👉 loadFromSheet called");
+
+  if (!cfg.sheet) {
+    console.log("❌ No sheet URL");
+    return;
+  }
+
+  console.log("🌐 Fetching:", cfg.sheet);
+
+  try {
+    const res = await fetch(cfg.sheet);
+    const data = await res.json();
+
+    console.log("📦 Sheet Data:", data);
+
+    products = data.products || data;
+
+    console.log("✅ Products set:", products);
+
+    localStorage.setItem('jfw_products', JSON.stringify(products));
+
+    renderDashboard();
+    renderProdTable();
+
+  } catch (e) {
+    console.error("❌ Sheet error:", e);
+  }
 }
-
 // ── Login ──
 function tryLogin() {
   const user = document.getElementById('loginUser').value.trim();
